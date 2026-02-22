@@ -12,6 +12,7 @@ export default function PopupApp() {
   const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [doi, setDoi] = useState('');
+  const [showDoi, setShowDoi] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -32,6 +33,7 @@ export default function PopupApp() {
         setDoi(pageMeta.doi ?? '');
 
         if (pageMeta.doi) {
+          setShowDoi(true);
           const crossref = await fetchMetadataByDoi(pageMeta.doi);
           if (crossref) {
             if (crossref.title) setTitle(crossref.title);
@@ -120,15 +122,34 @@ export default function PopupApp() {
           placeholder="Title"
         />
       </div>
-      <div>
-        <label className="text-xs text-gray-500 dark:text-gray-400">DOI</label>
-        <Input
-          value={doi}
-          onChange={(e) => setDoi(e.target.value)}
-          className="mt-0.5 w-full"
-          placeholder="Optional DOI"
-        />
-      </div>
+      {showDoi ? (
+        <div>
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-gray-500 dark:text-gray-400">DOI</label>
+            <button
+              type="button"
+              className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              onClick={() => { setShowDoi(false); setDoi(''); }}
+            >
+              remove
+            </button>
+          </div>
+          <Input
+            value={doi}
+            onChange={(e) => setDoi(e.target.value)}
+            className="mt-0.5 w-full"
+            placeholder="10.xxxx/yyyy"
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-left"
+          onClick={() => setShowDoi(true)}
+        >
+          + Add DOI
+        </button>
+      )}
       {displayUrl && (
         <p className="text-xs text-gray-500 dark:text-gray-400 truncate" title={displayUrl}>
           {displayUrl}
