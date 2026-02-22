@@ -40,6 +40,16 @@ export class MyZoteroDB extends Dexie {
     this.version(2).stores({
       attachmentBlobs: 'attachmentId',
     });
+    // Version 3: add syncStatus index to all tables so sync.ts can query pending records
+    this.version(3).stores({
+      items: 'id, dateAdded, dateModified, doi, syncStatus, *creators.name',
+      collections: 'id, parentId, dateAdded, syncStatus',
+      tags: 'id, name, syncStatus',
+      attachments: 'id, itemId, dateAdded, syncStatus',
+      annotations: 'id, attachmentId, page, syncStatus',
+      collectionItems: 'id, collectionId, itemId, syncStatus, [collectionId+itemId]',
+      itemTags: 'id, itemId, tagId, syncStatus, [itemId+tagId]',
+    });
   }
 }
 
